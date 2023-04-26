@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="updateForm" method="PUT">
+        <% articles.map((article) => {%>
+        <input type="text" name="id" id="id" value="<%= article.id%>" placeholder="Article id" disabled>
+        <input type="text" name="title" id="title" value="<%= article.title%>" placeholder="Article title">
+        <input type="text" name="content" id="content" value="<%= article.content%>" placeholder="Article content">
+        <input type="text" name="articleDate" id="articleDate" value="<%= article.articleDate%>" placeholder="Article date">
+        <button type="submit">update article</button>
+        <%});%>
+    </form>
+    <script>
+        document.getElementById('updateForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const updatedArticle = JSON.stringify({
+                id: document.getElementById('id').value,
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value,
+                articleDate: document.getElementById('articleDate').value
+            });
+            updateArticle(updatedArticle);
+        });
+    
+        function updateArticle(updatedArticle) {
+            fetch(`http://localhost:5000/article/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: updatedArticle
+            })
+            .then(response => {
+                if (response.status !== 201) {
+                    throw new Error('Erreur lors de la mise à jour de l\'article');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                window.location.assign('/article/listeArticle/');
+                // Faire quelque chose après la mise à jour réussie de l'article
+            })
+            .catch(error => console.error(error));
+        }
+    </script>
+</body>
+</html>
